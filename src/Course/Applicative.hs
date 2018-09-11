@@ -366,8 +366,14 @@ filtering ::
   (a -> f Bool)
   -> List a
   -> f (List a)
-filtering _ Nil       = Nil
-filtering f (x :. xs) = pure (\a -> 
+filtering _ Nil       = pure Nil
+filtering f (x :. xs) = filtering' x (f x) <*> (filtering f xs)
+
+filtering' :: Functor f => a -> f Bool -> f (List a -> List a)
+filtering' x fb = (<$>) (\bool -> if (bool) then ((++) (x :. Nil)) else ((++) Nil)) fb
+
+-- <*> :: Functor f => f (a -> b) -> f a -> f b
+-- fmap :: Functor f => f a -> (a -> b) -> f b
 
 -----------------------
 -- SUPPORT LIBRARIES --
