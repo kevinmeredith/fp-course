@@ -40,6 +40,7 @@ exec ::
   -> s
 exec state s = snd (runState state s)
 
+
 -- | Run the `State` seeded with `s` and retrieve the resulting value.
 --
 -- prop> \(Fun _ f) s -> eval (State f) s == fst (runState (State f) s)
