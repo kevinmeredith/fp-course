@@ -117,8 +117,9 @@ instance Monad (State s) where
     (a -> State s b)
     -> State s a
     -> State s b
-  (=<<) =
-    error "todo: Course.State (=<<)#instance (State s)"
+  (=<<) fa sa = State $ \s -> 
+        let (a, newState) = runState sa s
+        in (runState (fa a) newState)
 
 -- | Find the first element in a `List` that satisfies a given predicate.
 -- It is possible that no element is found, hence an `Optional` result.
@@ -139,10 +140,15 @@ findM ::
   (a -> f Bool)
   -> List a
   -> f (Optional a)
-findM =
-  error "todo: Course.State#findM"
+findM f xs = foldRight (\e acc -> ((=<<) (\x -> 
+              case x 
+               of Full(_) -> pure x
+                  Empty   -> ((=<<) (\y -> if (y == True) then (pure (Full e)) else (pure Empty)) (f e))
+            ) acc)) (pure Empty) xs
 
--- | Find the first element in a `List` that repeats.
+
+-- ./src/Course/List.hs:foldRight :: (a -> b -> b) -> b -> List a -> b
+
 -- It is possible that no element repeats, hence an `Optional` result.
 --
 -- /Tip:/ Use `findM` and `State` with a @Data.Set#Set@.
