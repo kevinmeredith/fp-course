@@ -96,14 +96,14 @@ instance Applicative (State s) where
   pure ::
     a
     -> State s a
-  pure =
-    error "todo: Course.State pure#instance (State s)"
+  pure x = State (\s -> (x, s))
   (<*>) ::
     State s (a -> b)
     -> State s a
     -> State s b 
-  (<*>) =
-    error "todo: Course.State (<*>)#instance (State s)"
+  (<*>) fa sa = State $ \s -> 
+        let (f, newS) = runState fa s 
+        in (runState ((<$>) f sa) newS)
 
 -- | Implement the `Bind` instance for `State s`.
 --
