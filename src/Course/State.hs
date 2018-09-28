@@ -147,7 +147,11 @@ findM f xs = foldRight (\e acc -> ((=<<) (\x ->
             ) acc)) (pure Empty) xs
 
 
--- ./src/Course/List.hs:foldRight :: (a -> b -> b) -> b -> List a -> b
+f :: Num s => Char -> State s Bool
+f x = (\s -> (const $ pure (x == 'c')) =<< put (1+s)) =<< get
+
+-- g :: (S.Set a) -> State (S.Set a) Bool
+g x = \s -> (const $ pure (S.member s x)) =<< get
 
 -- It is possible that no element repeats, hence an `Optional` result.
 --
