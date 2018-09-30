@@ -77,9 +77,9 @@ instance Functor (State s) where
     (a -> b)
     -> State s a
     -> State s b
-  (<$>) f st = State $ \s -> case (runState st s) of 
-     (a, b) -> (f a, b)         
-  
+  (<$>) f st = State $ \s -> case (runState st s) of
+     (a, b) -> (f a, b)
+
 
 -- | Implement the `Applicative` instance for `State s`.
 --
@@ -100,9 +100,9 @@ instance Applicative (State s) where
   (<*>) ::
     State s (a -> b)
     -> State s a
-    -> State s b 
-  (<*>) fa sa = State $ \s -> 
-        let (f, newS) = runState fa s 
+    -> State s b
+  (<*>) fa sa = State $ \s ->
+        let (f, newS) = runState fa s
         in (runState ((<$>) f sa) newS)
 
 -- | Implement the `Bind` instance for `State s`.
@@ -117,7 +117,7 @@ instance Monad (State s) where
     (a -> State s b)
     -> State s a
     -> State s b
-  (=<<) fa sa = State $ \s -> 
+  (=<<) fa sa = State $ \s ->
         let (a, newState) = runState sa s
         in (runState (fa a) newState)
 
@@ -140,8 +140,8 @@ findM ::
   (a -> f Bool)
   -> List a
   -> f (Optional a)
-findM f xs = foldRight (\e acc -> ((=<<) (\x -> 
-              case x 
+findM f xs = foldRight (\e acc -> ((=<<) (\x ->
+              case x
                of Full(_) -> pure x
                   Empty   -> ((=<<) (\y -> if (y == True) then (pure (Full e)) else (pure Empty)) (f e))
             ) acc)) (pure Empty) xs
@@ -150,8 +150,32 @@ findM f xs = foldRight (\e acc -> ((=<<) (\x ->
 f :: Num s => Char -> State s Bool
 f x = (\s -> (const $ pure (x == 'c')) =<< put (1+s)) =<< get
 
--- g :: (S.Set a) -> State (S.Set a) Bool
+g :: Ord a => S.Set a -> a -> State b Bool
 g x = \s -> (const $ pure (S.member s x)) =<< get
+
+
+-- State s a :: s -> (a, s)
+g' :: Ord a => S.Set a -> State a Bool
+g' set = (\a -> State $ \s -> (S.member a set, s)) =<< get
+
+--h :: Ord a => S.Set a -> State (S.Set a) Bool
+--h set = (\a -> State $ \s -> (S.member a set, S.insert s set)) =<< get
+
+-- g' set = (\s -> State $ (const $ pure (S.member set s))) =<< get
+
+k :: Ord a => State a (S.Set a -> S.Set a)
+k = State $ \s -> (\y -> S.insert s y, s)
+
+--λ: >let x = (<*>) k (State $ \s -> (Data.Set.insert s Data.Set.empty, s))
+--λ: >:t x
+--x :: Ord a => State a (Set a)
+
+z :: State (List a) (S.Set a -> S.Set a, Bool)
+z = State $ \s -> case s of
+    Nil     -> ((const S.empty, False), Nil)
+    x :. xs -> let newSet = \set -> S.union set (S.insert x set) in 
+
+    ((\set -> S.insert x set, )))
 
 -- It is possible that no element repeats, hence an `Optional` result.
 --
@@ -163,8 +187,9 @@ firstRepeat ::
   Ord a =>
   List a
   -> Optional a
-firstRepeat =
-  error "todo: Course.State#firstRepeat"
+firstRepeat = error "A"
+
+--  findM :: (a -> f Bool) -> List a -> f (Optional a)
 
 -- | Remove all duplicate elements in a `List`.
 -- /Tip:/ Use `filtering` and `State` with a @Data.Set#Set@.
