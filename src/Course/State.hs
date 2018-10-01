@@ -170,13 +170,21 @@ k = State $ \s -> (\y -> S.insert s y, s)
 --λ: >:t x
 --x :: Ord a => State a (Set a)
 
-z :: State (List a) (S.Set a -> S.Set a, Bool)
-z = State $ \s -> case s of
-    Nil     -> ((const S.empty, False), Nil)
-    x :. xs -> let newSet = \set -> S.union set (S.insert x set) in 
+-- z :: State (List a) (S.Set a -> S.Set a, Bool)
+-- z = State $ \s -> case s of
+--     Nil     -> ((const S.empty, False), Nil)
+--     x :. xs -> let newSet = \set -> S.union set (S.insert x set) in 
 
-    ((\set -> S.insert x set, )))
+--     ((\set -> S.insert x set, )))
 
+foo :: Ord a => S.Set a -> State (List a) (S.Set a, Optional a) 
+foo set = State $ \s -> case s of
+      Nil     -> ((set, Empty)  , Nil)
+      x :. xs -> let found = if (S.member x set) then (Full x) else Empty
+                 in ((S.insert x set, found), xs) 
+      
+
+-- | Find the first element in a `List` that repeats.
 -- It is possible that no element repeats, hence an `Optional` result.
 --
 -- /Tip:/ Use `findM` and `State` with a @Data.Set#Set@.
@@ -187,7 +195,18 @@ firstRepeat ::
   Ord a =>
   List a
   -> Optional a
-firstRepeat = error "A"
+firstRepeat xs = 
+  let p x = (\s -> (const $ pure (S.member x s)) =<< put (S.insert x s)) =<< get in eval (findM p xs) S.empty
+
+-- fooooooo xs = 
+    -- let p x = (_ =<< put $ S.insert x s) =<< get 
+    -- in runState (findM p xs) S.empty
+
+  -- (\s -> (\set -> if (S.member x set) then (pure True) else (pure False))
+
+-- let p x = (\s -> (const $ pure (x == 'i')) =<< put (1+s)) =<< get in runState (findM p $ listh ['a'..'h']) 0
+
+-- >>> let p x = (\s -> (const $ pure (x == 'i')) =<< put (1+s)) =<< get in runState (findM p $ listh ['a'..'h']) 0
 
 --  findM :: (a -> f Bool) -> List a -> f (Optional a)
 
