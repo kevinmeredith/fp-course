@@ -140,12 +140,8 @@ findM ::
   (a -> f Bool)
   -> List a
   -> f (Optional a)
-findM f = foldRight helper (pure Empty)
-   where helper a b = (=<<) (\y -> 
-          case y 
-            of Full(_) -> pure y
-               Empty   -> (<$>) (\z -> if (z == True) then (Full a) else (Empty)) (f a)
-            ) b            
+findM _ Nil       = pure Empty
+findM f (x :. xs) =  (=<<) (\a -> if (a == True) then (pure $ Full x) else (findM f xs)) (f x)
 
 -- foldRight :: (a -> b -> b) -> b -> List a -> b
 
