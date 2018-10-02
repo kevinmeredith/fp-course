@@ -140,12 +140,14 @@ findM ::
   (a -> f Bool)
   -> List a
   -> f (Optional a)
-findM f xs = foldRight (\e acc -> ((=<<) (\x ->
-              case x
-               of Full(_) -> pure x
-                  Empty   -> ((=<<) (\y -> if (y == True) then (pure (Full e)) else (pure Empty)) (f e))
-            ) acc)) (pure Empty) xs
+findM f = foldRight helper (pure Empty)
+   where helper a b = (=<<) (\y -> 
+          case y 
+            of Full(_) -> pure y
+               Empty   -> (<$>) (\z -> if (z == True) then (Full a) else (Empty)) (f a)
+            ) b            
 
+-- foldRight :: (a -> b -> b) -> b -> List a -> b
 
 f :: Num s => Char -> State s Bool
 f x = (\s -> (const $ pure (x == 'c')) =<< put (1+s)) =<< get
