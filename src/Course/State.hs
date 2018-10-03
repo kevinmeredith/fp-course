@@ -196,17 +196,14 @@ firstRepeat ::
 firstRepeat xs = 
   let p x = (\s -> (const $ pure (S.member x s)) =<< put (S.insert x s)) =<< get in eval (findM p xs) S.empty
 
--- fooooooo xs = 
-    -- let p x = (_ =<< put $ S.insert x s) =<< get 
-    -- in runState (findM p xs) S.empty
-
-  -- (\s -> (\set -> if (S.member x set) then (pure True) else (pure False))
-
--- let p x = (\s -> (const $ pure (x == 'i')) =<< put (1+s)) =<< get in runState (findM p $ listh ['a'..'h']) 0
-
--- >>> let p x = (\s -> (const $ pure (x == 'i')) =<< put (1+s)) =<< get in runState (findM p $ listh ['a'..'h']) 0
-
 --  findM :: (a -> f Bool) -> List a -> f (Optional a)
+
+
+-- filtering ::
+  -- Applicative f =>
+  -- (a -> f Bool)
+  -- -> List a
+  -- -> f (List a)
 
 -- | Remove all duplicate elements in a `List`.
 -- /Tip:/ Use `filtering` and `State` with a @Data.Set#Set@.
@@ -218,8 +215,8 @@ distinct ::
   Ord a =>
   List a
   -> List a
-distinct =
-  error "todo: Course.State#distinct"
+distinct xs =
+  let p x = (\s -> (const $ pure (not $ S.member x s)) =<< put (S.insert x s)) =<< get in eval (filtering p xs) S.empty
 
 -- | A happy number is a positive integer, where the sum of the square of its digits eventually reaches 1 after repetition.
 -- In contrast, a sad number (not a happy number) is where the sum of the square of its digits never reaches 1
