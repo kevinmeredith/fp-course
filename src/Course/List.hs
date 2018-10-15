@@ -107,6 +107,11 @@ sum ::
   -> Int
 sum = foldRight (+) 0
 
+sum' ::
+  List Integer
+  -> Integer
+sum' = foldRight (+) 0
+
 -- | Return the length of the list.
 --
 -- >>> length (1 :. 2 :. 3 :. Nil)
