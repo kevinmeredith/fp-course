@@ -218,6 +218,14 @@ distinct ::
 distinct xs =
   let p x = (\s -> (const $ pure (not $ S.member x s)) =<< put (S.insert x s)) =<< get in eval (filtering p xs) S.empty
 
+distinctA ::
+  Ord a =>
+  List a
+  -> List a
+distinctA xs =
+   eval (filtering p xs) S.empty
+    where p x = (\s -> (const $ pure (not $ S.member x s)) =<< put (S.insert x s)) =<< get
+
 -- | A happy number is a positive integer, where the sum of the square of its digits eventually reaches 1 after repetition.
 -- In contrast, a sad number (not a happy number) is where the sum of the square of its digits never reaches 1
 -- because it results in a recurring sequence.
@@ -233,6 +241,11 @@ distinct xs =
 --
 -- >>> isHappy 7
 -- True
+-- 7^2 = 49
+-- 4^2 + 9^2 = 16 + 81 = 97
+-- 9^2 + 7^2 = 81 + 49 = 130
+-- 1^2 + 3^2 + 0^2 = 1 + 9 + 0 = 10
+-- 1^0 + 0^2 = 1 + 0 = 1 --> HAPPY
 --
 -- >>> isHappy 42
 -- False
@@ -244,3 +257,22 @@ isHappy ::
   -> Bool
 isHappy =
   error "todo: Course.State#isHappy"
+
+-- input: 49
+-- output (False, 97)
+happyHelper :: State Integer Bool
+happyHelper = State $ \s ->
+  let
+    digits  = digs s
+    sumd    = sum' digits -- Integer 
+    squared = P.fmap (\i -> (P.^) i 2) digits -- List Integer
+    next    = sum' squared -- Integer
+  in
+    if(sumd == 1) then (True, next) else (False, next)
+
+-- credit: https://stackoverflow.com/a/3963286/409976
+digs :: Integral a => a -> List a
+digs 0 = 0 :. Nil 
+digs n = digs' n
+  where digs' 0 = Nil
+        digs' n = digs' (n `div` 10) ++ ((n `mod` 10) :. Nil)
