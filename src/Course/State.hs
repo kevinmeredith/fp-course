@@ -226,6 +226,8 @@ distinctA xs =
    eval (filtering p xs) S.empty
     where p x = (\s -> (const $ pure (not $ S.member x s)) =<< put (S.insert x s)) =<< get
 
+-- produce :: (a -> a) -> a -> List a
+
 -- | A happy number is a positive integer, where the sum of the square of its digits eventually reaches 1 after repetition.
 -- In contrast, a sad number (not a happy number) is where the sum of the square of its digits never reaches 1
 -- because it results in a recurring sequence.
@@ -255,8 +257,10 @@ distinctA xs =
 isHappy ::
   Integer
   -> Bool
-isHappy =
-  error "todo: Course.State#isHappy"
+isHappy int =
+  case firstRepeat (produce (exec happyHelper) int) of
+    Empty  -> True
+    Full i -> if(i == 1) then True else False
 
 -- input: 49
 -- output (False, 97)
