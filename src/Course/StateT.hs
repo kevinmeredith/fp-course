@@ -39,8 +39,9 @@ instance Functor f => Functor (StateT s f) where
     (a -> b)
     -> StateT s f a
     -> StateT s f b
-  (<$>) =
-    error "todo: Course.StateT (<$>)#instance (StateT s f)"
+  (<$>) f x = StateT $ \s -> 
+       let result = runStateT x s
+       in (<$>) (\(a, s1) -> (f a, s1)) result 
 
 -- | Implement the `Applicative` instance for @StateT s f@ given a @Monad f@.
 --
@@ -63,14 +64,17 @@ instance Monad f => Applicative (StateT s f) where
   pure ::
     a
     -> StateT s f a
-  pure =
-    error "todo: Course.StateT pure#instance (StateT s f)"
+  pure x = StateT $ \s -> pure (x, s)
   (<*>) ::
    StateT s f (a -> b)
     -> StateT s f a
     -> StateT s f b
-  (<*>) =
-    error "todo: Course.StateT (<*>)#instance (StateT s f)"
+  (<*>) fn fa = StateT $ \s -> 
+     runStateT fn s >>= (\(func, s2) ->
+      runStateT fa s2 >>= (\(a, s3) -> 
+        pure (func a, s3)
+        )
+      ) 
 
 -- | Implement the `Monad` instance for @StateT s f@ given a @Monad f@.
 -- Make sure the state value is passed through in `bind`.
@@ -85,8 +89,10 @@ instance Monad f => Monad (StateT s f) where
     (a -> StateT s f b)
     -> StateT s f a
     -> StateT s f b
-  (=<<) =
-    error "todo: Course.StateT (=<<)#instance (StateT s f)"
+  (=<<) f fa = join $ StateT $ \s ->
+    runState fa s >>= (\(a, s2) ->
+     runStateT (f a) s2
+    )
 
 -- | A `State'` is `StateT` specialised to the `ExactlyOne` functor.
 type State' s a =
