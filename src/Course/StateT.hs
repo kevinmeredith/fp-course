@@ -246,7 +246,15 @@ instance Functor f => Functor (OptionalT f) where
 -- [Full 2,Empty,Full 3,Empty]
 instance Monad f => Applicative (OptionalT f) where
   pure x     = OptionalT $ pure (Full x)
-  (<*>) f fa = OptionalT $ f >>= \fn -> fn <*> fa
+  (<*>) f fa = OptionalT $ (runOptionalT f) >>= (\mFn ->
+                (runOptionalT fa) >>= (\ma -> 
+                  pure (mFn <*> ma) ) )
+
+  -- data OptionalT f a =
+  --   OptionalT {
+  --     runOptionalT ::
+  --       f (Optional a)
+  --   }
 
     -- (<*>) ::
     -- f (a -> b)
