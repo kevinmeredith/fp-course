@@ -341,8 +341,48 @@ distinctG ::
   (Integral a, Show a) =>
   List a
   -> Logger Chars (Optional (List a))
-distinctG =
-  error "todo: Course.StateT#distinctG"
+distinctG list = error "!"
+
+-- StateT :: s
+--       -> f (a, s)
+
+-- StateT s f a
+
+
+gg :: StateT (List a) (Logger Chars) (Optional (List a))
+gg = StateT $ \s -> case s of
+    Nil            -> Logger Nil (Full Nil, Nil)
+    (head :. tail) -> error "A"
+
+-- newtype StateT s f a =
+--   StateT {
+--     runStateT ::
+--       s
+--       -> f (a, s)
+--   }
+
+bip ::
+  (Integral a, Show a) =>
+  List a
+  -> Logger Chars (List a)
+bip list = 
+  filtering (\e -> 
+    if(e > 100) then Logger (("aborting > 100: " ++ (show' e)) :. Nil) False
+    else if (e `mod` 2 == 0) then Logger (("even number: " ++ (show' e)) :. Nil) True 
+    else Logger Nil True
+    ) list
+
+  -- filtering ::
+  -- Applicative f =>
+  -- (a -> f Bool)
+  -- -> List a
+  -- -> f (List a)
+
+-- distinctG Nil       = pure Empty
+-- distinctG (x :. xs) = if(x > 100) then (Logger ("aborting > 100: " ++ (show x)) Empty) 
+--                       else 
+--                         let msg = if (x % 2 == 0) then ("even number:" ++ show x) else Nil
+--                         in (Logger msg (Full 6))
 
 onFull ::
   Applicative f =>
