@@ -298,10 +298,9 @@ instance Functor (Logger l) where
 -- >>> Logger (listh [1,2]) (+7) <*> Logger (listh [3,4]) 3
 -- Logger [1,2,3,4] 10
 instance Applicative (Logger l) where
-  pure =
-    error "todo: Course.StateT pure#instance (Logger l)"
-  (<*>) =
-    error "todo: Course.StateT (<*>)#instance (Logger l)"
+  pure = Logger Nil
+  (<*>) (Logger list1 f) (Logger list2 a) =
+    Logger (list1 ++ list2) (f a)
 
 -- | Implement the `Monad` instance for `Logger`.
 -- The `bind` implementation must append log values to maintain associativity.
