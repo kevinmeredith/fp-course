@@ -308,8 +308,9 @@ instance Applicative (Logger l) where
 -- >>> (\a -> Logger (listh [4,5]) (a+3)) =<< Logger (listh [1,2]) 3
 -- Logger [1,2,4,5] 6
 instance Monad (Logger l) where
-  (=<<) =
-    error "todo: Course.StateT (=<<)#instance (Logger l)"
+  (=<<) f (Logger list a) = 
+   case (f a) of 
+     Logger newList b -> Logger (list ++ newList) b
 
 -- | A utility function for producing a `Logger` with one log value.
 --
