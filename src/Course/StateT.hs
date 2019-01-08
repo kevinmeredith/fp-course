@@ -349,10 +349,16 @@ distinctG list = error "!"
 -- StateT s f a
 
 
-gg :: StateT (List a) (Logger Chars) (Optional (List a))
+gg :: (Integral a, Show a) => StateT (List a) (Logger Chars) (Optional (List a))
 gg = StateT $ \s -> case s of
     Nil            -> Logger Nil (Full Nil, Nil)
-    (head :. tail) -> error "A"
+    (head :. tail) -> 
+      if(head > 100) then Logger (("aborting > 100: " ++ (show' head)) :. Nil) (Empty, Nil)
+      else if (head `mod` 2 == 0) then Logger (("even number: " ++ (show' head)) :. Nil) (Full (head :. Nil), tail) 
+      else Logger Nil (Full (head :. Nil), tail)
+
+gg' :: Eq a => a -> List a -> List a     
+gg' x xs = xs
 
 -- newtype StateT s f a =
 --   StateT {
