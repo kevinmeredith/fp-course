@@ -357,6 +357,16 @@ gg = StateT $ \s -> case s of
       else if (head `mod` 2 == 0) then Logger (("even number: " ++ (show' head)) :. Nil) (Full (head :. Nil), tail) 
       else Logger Nil (Full (head :. Nil), tail)
 
+ff :: (Integral a, Show a) => StateT (List a) (Logger Chars) (Optional (List a))
+ff = (\mA -> case mA of
+  Full a -> _
+  Empty  -> pure Empty) =<< gg 
+
+-- (=<<) ::
+-- (a -> StateT s f b)
+-- -> StateT s f a
+-- -> StateT s f b
+
 gg' :: Eq a => a -> List a -> List a     
 gg' x xs = xs
 
