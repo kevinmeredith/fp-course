@@ -342,9 +342,32 @@ distinctG ::
   List a
   -> Logger Chars (Optional (List a))
 distinctG list = error "!"
+-- distinctG list = distinctG' list (pure $ Full Nil)
 
--- StateT :: s
---       -> f (a, s)
+
+-- StateT s f a
+
+aaaaa :: StateT (List Int) (OptionalT (Logger Chars)) (S.Set Int)
+aaaaa = StateT $ \s -> case s of
+  Nil            -> OptionalT $ Logger Nil $ Full (S.empty, Nil)
+  (head :. tail) -> _
+
+
+    -- if(head > 100) then Logger (("aborting > 100: " ++ (show' head)) :. Nil) (Empty, Nil)
+    -- else if (head `mod` 2 == 0) then Logger (("even number: " ++ (show' head)) :. Nil) (Full (head :. Nil), tail) 
+    -- else Logger Nil (Full (head :. Nil), tail)
+
+-- distinctG' ::
+--   (Integral a, Show a) =>
+--   List a
+--   -> Logger Chars (Optional (List a))
+--   -> Logger Chars (Optional (List a))
+-- distinctG' list acc = case list of 
+--   Nil      -> acc
+--   nonEmpty -> case (runStateT gg nonEmpty) of 
+--     result @ Logger log (a, b) -> 
+-- -- StateT :: s
+-- --       -> f (a, s)
 
 -- StateT s f a
 
@@ -357,10 +380,13 @@ gg = StateT $ \s -> case s of
       else if (head `mod` 2 == 0) then Logger (("even number: " ++ (show' head)) :. Nil) (Full (head :. Nil), tail) 
       else Logger Nil (Full (head :. Nil), tail)
 
-ff :: (Integral a, Show a) => StateT (List a) (Logger Chars) (Optional (List a))
-ff = (\mA -> case mA of
-  Full a -> _
-  Empty  -> pure Empty) =<< gg 
+-- ff :: (Integral a, Show a) => StateT (List a) (Logger Chars) (OptionalT List a)
+-- ff = StateT $ \s -> case s of
+--   Nil            -> Logger Nil (OptionalT Nil, Nil)
+--   (head :. tail) -> 
+--     if(head > 100) then Logger (("aborting > 100: " ++ (show' head)) :. Nil) (OptionalT Empty, Nil)
+--     else if (head `mod` 2 == 0) then Logger (("even number: " ++ (show' head)) :. Nil) (Full (head :. Nil), tail) 
+--     else Logger Nil (Full (head :. Nil), tail)
 
 -- (=<<) ::
 -- (a -> StateT s f b)
