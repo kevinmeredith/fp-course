@@ -350,12 +350,13 @@ distinctG list = error "!"
 aaaaa :: StateT (List Int) (OptionalT (Logger Chars)) (S.Set Int)
 aaaaa = StateT $ \s -> case s of
   Nil            -> OptionalT $ Logger Nil $ Full (S.empty, Nil)
-  (head :. tail) -> _
-
-
-    -- if(head > 100) then Logger (("aborting > 100: " ++ (show' head)) :. Nil) (Empty, Nil)
-    -- else if (head `mod` 2 == 0) then Logger (("even number: " ++ (show' head)) :. Nil) (Full (head :. Nil), tail) 
-    -- else Logger Nil (Full (head :. Nil), tail)
+  (head :. tail) -> OptionalT $ 
+    if(head > 100) 
+      then Logger (("aborting > 100: " ++ (show' head)) :. Nil) Empty    
+    else if (head `mod` 2 == 0) 
+      then Logger (("even number: " ++ (show' head)) :. Nil) $ Full ((S.insert head S.empty), tail) 
+    else 
+      Logger Nil $ Full (S.insert head S.empty, tail)
 
 -- distinctG' ::
 --   (Integral a, Show a) =>
