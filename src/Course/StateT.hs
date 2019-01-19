@@ -341,22 +341,26 @@ distinctG ::
   (Integral a, Show a) =>
   List a
   -> Logger Chars (Optional (List a))
-distinctG list = error "!"
--- distinctG list = distinctG' list (pure $ Full Nil)
-
+distinctG list = 
+  (\opt -> (listh . S.toList . S.fromList . hlist . fst) <$> opt) <$> (runOptionalT $ runStateT p list)
 
 -- StateT s f a
 
-aaaaa :: StateT (List Int) (OptionalT (Logger Chars)) (S.Set Int)
+aaaaa :: (Integral a, Show a) => StateT (List a) (OptionalT (Logger Chars)) (List a)
 aaaaa = StateT $ \s -> case s of
-  Nil            -> OptionalT $ Logger Nil $ Full (S.empty, Nil)
+  Nil            -> OptionalT $ Logger Nil $ Full (Nil, Nil)
   (head :. tail) -> OptionalT $ 
     if(head > 100) 
       then Logger (("aborting > 100: " ++ (show' head)) :. Nil) Empty    
     else if (head `mod` 2 == 0) 
-      then Logger (("even number: " ++ (show' head)) :. Nil) $ Full ((S.insert head S.empty), tail) 
+      then Logger (("even number: " ++ (show' head)) :. Nil) $ Full (head :. Nil, tail) 
     else 
-      Logger Nil $ Full (S.insert head S.empty, tail)
+      Logger Nil $ Full (head :. Nil, tail) 
+
+p :: (Integral a, Show a) => StateT (List a) (OptionalT (Logger Chars)) (List a)    
+p = aaaaa >>= \xs -> case xs of
+  Nil -> pure Nil
+  _   -> (\a -> xs ++ a) <$> p
 
 -- distinctG' ::
 --   (Integral a, Show a) =>
