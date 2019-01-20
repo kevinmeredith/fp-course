@@ -7,6 +7,7 @@ module Course.Extend where
 import Course.Core
 import Course.ExactlyOne
 import Course.List
+import Course.Monad
 import Course.Optional
 import Course.Functor
 
@@ -33,8 +34,7 @@ instance Extend ExactlyOne where
     (ExactlyOne a -> b)
     -> ExactlyOne a
     -> ExactlyOne b
-  (<<=) =
-    error "todo: Course.Extend (<<=)#instance ExactlyOne"
+  (<<=) f a = ExactlyOne $ f a
 
 -- | Implement the @Extend@ instance for @List@.
 --
@@ -66,8 +66,7 @@ instance Extend Optional where
     (Optional a -> b)
     -> Optional a
     -> Optional b
-  (<<=) =
-    error "todo: Course.Extend (<<=)#instance Optional"
+  (<<=) f opt = opt >>= (\_ -> Full $ f opt)
 
 -- | Duplicate the functor using extension.
 --
