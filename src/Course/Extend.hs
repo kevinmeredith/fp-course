@@ -51,8 +51,8 @@ instance Extend List where
     (List a -> b)
     -> List a
     -> List b
-  (<<=) =
-    error "todo: Course.Extend (<<=)#instance List"
+  (<<=) _ Nil             = Nil
+  (<<=) f xxs @ (_ :. xs) = f xxs :. (<<=) f xs
 
 -- | Implement the @Extend@ instance for @Optional@.
 --
@@ -85,5 +85,7 @@ cojoin ::
   Extend f =>
   f a
   -> f (f a)
-cojoin =
-  error "todo: Course.Extend#cojoin"
+cojoin x = (\a -> id <$> a) <<= x
+
+
+-- (<$>) :: (a -> b) -> f a -> f b
