@@ -7,7 +7,6 @@ module Course.Comonad where
 import Course.Core
 import Course.ExactlyOne
 import Course.Extend
-import Course.Functor
 
 -- | All instances of the `Comonad` type-class must satisfy two laws. These
 -- laws are not checked by the compiler. These laws are given as:
@@ -41,7 +40,15 @@ instance Comonad ExactlyOne where
   (a -> b)
   -> f a
   -> f b
-(<$$>) f fa = f <$> fa
+(<$$>) f fa = (f . copure)  <<= fa
 
--- -- (<$>) :: (a -> b) -> f a -> f b
+-- cojoin ::
+--   Extend f =>
+--   f a
+--   -> f (f a)
+
+-- copure ::
+-- f a
+-- -> a
+
 -- (<<=) :: (f a -> b) -> f a -> f b
