@@ -13,13 +13,6 @@ import Course.Monad
 newtype Compose f g a =
   Compose (f (g a))
 
-  -- class Functor f where
-  --   -- Pronounced, eff-map.
-  --   (<$>) ::
-  --     (a -> b)
-  --     -> f a
-  --     -> f b
-
 -- Implement a Functor instance for Compose
 instance (Functor f, Functor g) =>
     Functor (Compose f g) where
@@ -30,20 +23,7 @@ instance (Applicative f, Applicative g) =>
 -- Implement the pure function for an Applicative instance for Compose
   pure a = Compose $ pure $ pure a
 -- Implement the (<*>) function for an Applicative instance for Compose
-  (<*>) (Compose f) (Compose fga) = Compose $ (_ <$> f) <*> (_ <$> fga)
-
- -- f (g b)
-
-  -- Expected type: f (g a -> g b)
-  -- Actual type: f (g (a -> b))
-
-  -- fga :: f (g a) 
-  -- f :: f (g (a -> b))
-  -- (<*>) :: Compose f g (a -> b) -> Compose f g a -> Compose f g b
-
-    -- f (a -> b)
-    -- -> f a
-    -- -> f b
+  (<*>) (Compose f) (Compose fga) = Compose $ ((\gab -> \ga -> gab <*> ga) <$> f) <*> fga
 
 instance (Monad f, Monad g) =>
   Monad (Compose f g) where
