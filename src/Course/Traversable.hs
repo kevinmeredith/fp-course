@@ -70,8 +70,7 @@ sequenceA ::
   (Applicative f, Traversable t) =>
   t (f a)
   -> f (t a)
-sequenceA =
-  error "todo: Course.Traversable#sequenceA"
+sequenceA tfa = traverse id tfa
 
 instance (Traversable f, Traversable g) =>
   Traversable (Compose f g) where
