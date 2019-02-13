@@ -4,6 +4,8 @@
 module Course.Compose where
 
 import Course.Core
+import Course.List
+import Course.Optional
 import Course.Functor
 import Course.Applicative
 import Course.Monad
@@ -12,6 +14,9 @@ import Course.Monad
 
 newtype Compose f g a =
   Compose (f (g a))
+
+printCompose :: Show a => Compose Optional Optional a -> List Char
+printCompose (Compose fga) = "Compose(" ++ (show' fga) ++ ")"
 
 -- Implement a Functor instance for Compose
 instance (Functor f, Functor g) =>
