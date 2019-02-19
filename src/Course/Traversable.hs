@@ -98,8 +98,12 @@ instance (Functor f, Functor g) =>
 instance (Traversable f, Traversable g) =>
   Traversable (Product f g) where
 -- Implement the traverse function for a Traversable instance for Product
-  traverse =
-    error "todo: Course.Traversable traverse#instance (Product f g)"
+  traverse :: 
+    Applicative h =>
+    (a -> h b)
+    -> Product f g a
+    -> h (Product f g b)  
+  traverse fn (Product fa ga) = lift2 (\fb gb -> Product fb gb) (traverse fn fa) (traverse fn ga)
 
 -- | The `Coproduct` data type contains one value from either of the two type constructors.
 data Coproduct f g a =
