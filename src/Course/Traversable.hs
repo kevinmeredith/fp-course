@@ -86,6 +86,9 @@ instance (Traversable f, Traversable g) =>
 data Product f g a =
   Product (f a) (g a)
 
+printProduct :: (Show (f a), Show (g a)) => Product f g a -> List Char  
+printProduct (Product fa ga) = "Product" ++ "(" ++ show' fa ++ ")" ++ " " ++ "(" ++ show' ga ++ ")"
+
 instance (Functor f, Functor g) =>
   Functor (Product f g) where
 -- Implement the (<$>) function for a Functor instance for Product
