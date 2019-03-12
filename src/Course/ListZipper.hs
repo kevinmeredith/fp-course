@@ -110,8 +110,8 @@ toListZ (IsZ z) =
 fromList ::
   List a
   -> MaybeListZipper a
-fromList =
-  error "todo: Course.ListZipper#fromList"
+fromList Nil       = IsNotZ
+fromList (x :. xs) = IsZ $ ListZipper Nil x xs
 
 -- | Retrieve the `ListZipper` from the `MaybeListZipper` if there is one.
 --
@@ -121,8 +121,8 @@ fromList =
 toOptional ::
   MaybeListZipper a
   -> Optional (ListZipper a)
-toOptional =
-  error "todo: Course.ListZipper#toOptional"
+toOptional IsNotZ   = Empty
+toOptional (IsZ lz) = Full lz
 
 zipper ::
   [a]
@@ -181,8 +181,7 @@ withFocus ::
   (a -> a)
   -> ListZipper a
   -> ListZipper a
-withFocus =
-  error "todo: Course.ListZipper#withFocus"
+withFocus f (ListZipper left focus right) = ListZipper left (f focus) right
 
 -- | Set the focus of the zipper to the given value.
 -- /Tip:/ Use `withFocus`.
@@ -196,8 +195,7 @@ setFocus ::
   a
   -> ListZipper a
   -> ListZipper a
-setFocus =
-  error "todo: Course.ListZipper#setFocus"
+setFocus newFocus (ListZipper left _ right) = ListZipper left newFocus right
 
 -- A flipped infix alias for `setFocus`. This allows:
 --
@@ -219,8 +217,9 @@ setFocus =
 hasLeft ::
   ListZipper a
   -> Bool
-hasLeft =
-  error "todo: Course.ListZipper#hasLeft"
+hasLeft (ListZipper Nil _ _)      = False
+hasLeft (ListZipper (_ :. _) _ _) = True
+  
 
 -- | Returns whether there are values to the right of focus.
 --
@@ -232,8 +231,8 @@ hasLeft =
 hasRight ::
   ListZipper a
   -> Bool
-hasRight =
-  error "todo: Course.ListZipper#hasRight"
+hasRight (ListZipper _ _ Nil)      = False
+hasRight (ListZipper _ _ (_ :. _)) = True
 
 -- | Seek to the left for a location matching a predicate, starting from the
 -- current one.
@@ -260,9 +259,11 @@ findLeft ::
   (a -> Bool)
   -> ListZipper a
   -> MaybeListZipper a
-findLeft =
-  error "todo: Course.ListZipper#findLeft"
-    
+findLeft pred (ListZipper (head :. tail) focus right) = 
+  if (pred head) then IsZ $ ListZipper tail head (focus :. right) 
+                 else findLeft pred (ListZipper tail head (focus :. right))
+findLeft _ (ListZipper Nil _ _) = IsNotZ
+
 -- | Seek to the right for a location matching a predicate, starting from the
 -- current one.
 --
