@@ -325,8 +325,8 @@ moveRightLoop =
 moveLeft ::
   ListZipper a
   -> MaybeListZipper a
-moveLeft =
-  error "todo: Course.ListZipper#moveLeft"
+moveLeft (ListZipper Nil _ _)                    = IsNotZ
+moveLeft (ListZipper (head :. tail) focus right) = IsZ $ ListZipper tail head (focus :. right)
 
 -- | Move the zipper one position to the right.
 --
@@ -338,8 +338,8 @@ moveLeft =
 moveRight ::
   ListZipper a
   -> MaybeListZipper a
-moveRight =
-  error "todo: Course.ListZipper#moveRight"
+moveRight (ListZipper _ _ Nil)                   = IsNotZ
+moveRight (ListZipper left focus (head :. tail)) = IsZ $ ListZipper (focus :. left) head tail
 
 -- | Swap the current focus with the value to the left of focus.
 --
