@@ -259,10 +259,17 @@ findLeft ::
   (a -> Bool)
   -> ListZipper a
   -> MaybeListZipper a
-findLeft pred (ListZipper (head :. tail) focus right) = 
-  if (pred head) then IsZ $ ListZipper tail head (focus :. right) 
-                 else findLeft pred (ListZipper tail head (focus :. right))
-findLeft _ (ListZipper Nil _ _) = IsNotZ
+findLeft pred (ListZipper left focus right) = 
+  case (break pred left) of
+    (_, Nil)                   -> IsNotZ
+    (unmatched, match :. rest) -> IsZ $ ListZipper rest match ((reverse unmatched) ++ (focus :. right))
+
+--   break ::
+--   (a -> Bool)
+--   -> List a
+--   -> (List a, List a)
+-- break p =
+--   span (not . p)
 
 -- | Seek to the right for a location matching a predicate, starting from the
 -- current one.
