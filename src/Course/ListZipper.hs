@@ -386,8 +386,7 @@ swapRight =
 dropLefts ::
   ListZipper a
   -> ListZipper a
-dropLefts =
-  error "todo: Course.ListZipper#dropLefts"
+dropLefts (ListZipper _ focus right) = ListZipper Nil focus right
 
 -- | Drop all values to the right of the focus.
 --
@@ -401,8 +400,7 @@ dropLefts =
 dropRights ::
   ListZipper a
   -> ListZipper a
-dropRights =
-  error "todo: Course.ListZipper#dropRights"
+dropRights (ListZipper left focus _) = ListZipper left focus Nil
 
 -- | Move the focus left the given number of positions. If the value is negative, move right instead.
 --
